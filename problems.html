@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problems | OKorbits</title>
+  <meta name="description" content="Practice DSA problems by topic, difficulty, and interview pattern on OKorbits.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/problems.css">
+</head>
+<body>
+  <div class="bg-orb orb-one"></div><div class="bg-orb orb-two"></div><div class="grid-overlay"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark"><img src="static/logo.svg" alt="OKorbits logo"></span><span class="brand-text">OKORBITS</span></a>
+    <nav class="desktop-nav"><a href="index.html">Home</a><a class="active" href="problems.html">Problems</a><a href="contact.html">Contact</a></nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
+
+  <main>
+    <section class="hero"><p class="eyebrow">Problem Library</p><h1>Choose focused questions, not random grind.</h1><p class="hero-copy">Track-wise problem sets with difficulty balance, company tags, and estimated solve time.</p></section>
+    <section class="panel filter-panel">
+      <div class="search-wrap"><input id="problem-search" type="text" placeholder="Search problems, tags, or companies"><button id="search-btn" class="btn btn-solid" type="button">Search</button></div>
+      <div class="filter-row">
+        <button class="chip active" data-group="topic" data-value="all">All</button><button class="chip" data-group="topic" data-value="arrays">Arrays</button><button class="chip" data-group="topic" data-value="binary-search">Binary Search</button><button class="chip" data-group="topic" data-value="graphs">Graphs</button><button class="chip" data-group="topic" data-value="dynamic-programming">Dynamic Programming</button>
+        <button class="pill easy" data-group="difficulty" data-value="easy">Easy</button><button class="pill medium" data-group="difficulty" data-value="medium">Medium</button><button class="pill hard" data-group="difficulty" data-value="hard">Hard</button>
+        <button class="pill" data-group="company" data-value="google">Google</button><button class="pill" data-group="company" data-value="amazon">Amazon</button><button class="pill" data-group="company" data-value="microsoft">Microsoft</button>
+      </div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-header"><h2>Top Problems For This Week</h2><p>Curated picks based on interview frequency.</p></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Title</th><th>Topic</th><th>Difficulty</th><th>Acceptance</th><th>Action</th></tr></thead><tbody id="problem-body"></tbody></table></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><p>2026 OKorbits. Built for serious DSA learners.</p><div><a href="index.html">Home</a><a href="contact.html">Contact</a><a href="contests.html">Contests</a></div></footer>
+
+  <script src="static/app.js"></script>
+  <script src="static/app-data.js"></script>
+  <script>
+    OKAuth.renderHeaderActions('#header-actions');
+    const state = { topic:'all', difficulty:'all', company:'all', query:'' };
+    const tbody = document.getElementById('problem-body');
+    const noRowHtml = '<tr id="no-results-row" class="no-results-row" hidden><td colspan="6">No problems found for current filters.</td></tr>';
+
+    function rowHtml(p){
+      const level = '<span class="level ' + p.difficulty + '">' + p.difficulty.charAt(0).toUpperCase() + p.difficulty.slice(1) + '</span>';
+      const blob = (p.title + ' ' + p.topic_label + ' ' + p.company + ' ' + p.difficulty).toLowerCase();
+      return '<tr data-problem data-topic="' + p.topic_filter + '" data-difficulty="' + p.difficulty + '" data-company="' + p.company + '" data-search="' + blob + '" data-url="solutions.html?problem=' + p.id + '"><td>' + String(p.id).padStart(2,'0') + '</td><td>' + p.title + '</td><td>' + p.topic_label + '</td><td>' + level + '</td><td>' + p.acceptance + '</td><td><a href="solutions.html?problem=' + p.id + '">Solutions</a></td></tr>';
+    }
+
+    tbody.innerHTML = OKData.PROBLEMS.map(rowHtml).join('') + noRowHtml;
+    const rows = Array.from(document.querySelectorAll('tr[data-problem]'));
+    const noResultsRow = document.getElementById('no-results-row');
+    const filterButtons = Array.from(document.querySelectorAll('.chip[data-group], .pill[data-group]'));
+
+    function setActive(group, value){ filterButtons.forEach(function(btn){ if(btn.dataset.group===group){ btn.classList.toggle('active', btn.dataset.value===value); } }); }
+
+    function applyFilters(){
+      let visibleCount = 0;
+      rows.forEach(function(row){
+        const topicOk = state.topic === 'all' || row.dataset.topic === state.topic;
+        const diffOk = state.difficulty === 'all' || row.dataset.difficulty === state.difficulty;
+        const companyOk = state.company === 'all' || row.dataset.company === state.company;
+        const searchOk = state.query === '' || (row.dataset.search || '').includes(state.query);
+        const visible = topicOk && diffOk && companyOk && searchOk;
+        row.hidden = !visible;
+        if(visible) visibleCount += 1;
+      });
+      noResultsRow.hidden = visibleCount !== 0;
+    }
+
+    filterButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const g = btn.dataset.group, v = btn.dataset.value;
+        if(g === 'topic'){ state.topic = v; setActive('topic', v); }
+        if(g === 'difficulty'){ state.difficulty = state.difficulty === v ? 'all' : v; setActive('difficulty', state.difficulty); }
+        if(g === 'company'){ state.company = state.company === v ? 'all' : v; setActive('company', state.company); }
+        applyFilters();
+      });
+    });
+
+    document.getElementById('search-btn').addEventListener('click', function(){ state.query = document.getElementById('problem-search').value.trim().toLowerCase(); applyFilters(); });
+    document.getElementById('problem-search').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ state.query = e.target.value.trim().toLowerCase(); applyFilters(); } });
+    rows.forEach(function(row){ row.addEventListener('click', function(e){ if(e.target.closest('a')) return; window.location.href = row.dataset.url; }); });
+    applyFilters();
+  </script>
+</body>
+</html>

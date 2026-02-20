@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contests | OKorbits</title>
+  <meta name="description" content="Join live and upcoming DSA contests on OKorbits.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/contests.css">
+</head>
+<body>
+  <div class="bg-orb orb-one"></div><div class="bg-orb orb-two"></div><div class="grid-overlay"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark"><img src="static/logo.svg" alt="OKorbits logo"></span><span class="brand-text">OKORBITS</span></a>
+    <nav class="desktop-nav"><a href="index.html">Home</a><a href="problems.html">Problems</a><a class="active" href="contests.html">Contests</a><a href="contact.html">Contact</a></nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
+
+  <main>
+    <section class="hero"><p class="eyebrow">Contest Arena</p><h1>Compete weekly, rank globally, improve under pressure.</h1><p class="hero-copy">Live rounds, scheduled contests, and leaderboard tracking to build real interview speed.</p></section>
+    <section class="panel live-panel"><div><p class="live-tag">LIVE</p><h2 id="live-name"></h2><p id="live-meta"></p></div><div class="live-metrics"><p><strong id="live-participants"></strong> participants</p><a class="btn btn-solid" href="problems.html">Join Now</a></div></section>
+    <section class="panel"><div class="panel-header"><h2>Upcoming Contests</h2></div><div class="contest-grid" id="upcoming-grid"></div></section>
+    <section class="panel two-col">
+      <div><div class="panel-header"><h2>Past Contests</h2></div><div class="table-wrap"><table><thead><tr><th>Contest</th><th>Date</th><th>Participants</th><th>Top Score</th></tr></thead><tbody id="past-body"></tbody></table></div></div>
+      <div><div class="panel-header"><h2>Leaderboard</h2></div><div class="table-wrap"><table><thead><tr><th>#</th><th>User</th><th>Score</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div></div>
+    </section>
+  </main>
+  <footer class="site-footer"><p>2026 OKorbits. Built for serious DSA learners.</p><div><a href="index.html">Home</a><a href="contact.html">Contact</a><a href="contests.html">Contests</a></div></footer>
+
+  <script src="static/app.js"></script>
+  <script src="static/app-data.js"></script>
+  <script>
+    OKAuth.renderHeaderActions('#header-actions');
+    const c = OKData.CONTESTS;
+    document.getElementById('live-name').textContent = c.live.name;
+    document.getElementById('live-meta').textContent = c.live.start + ' • ' + c.live.duration + ' • ' + c.live.questions + ' Questions';
+    document.getElementById('live-participants').textContent = c.live.participants;
+    document.getElementById('upcoming-grid').innerHTML = c.upcoming.map(function(x){ return '<article class="contest-card"><h3>' + x.name + '</h3><p>' + x.start + '</p><p>' + x.duration + ' • ' + x.questions + ' Qs • ' + x.difficulty + '</p><a class="btn btn-ghost" href="#">Set Reminder</a></article>'; }).join('');
+    document.getElementById('past-body').innerHTML = c.past.map(function(x){ return '<tr><td>' + x.name + '</td><td>' + x.date + '</td><td>' + x.participants + '</td><td>' + x.top_score + '</td></tr>'; }).join('');
+    document.getElementById('leaderboard-body').innerHTML = c.leaderboard.map(function(x){ return '<tr><td>' + x.rank + '</td><td>' + x.user + '</td><td>' + x.score + '</td></tr>'; }).join('');
+  </script>
+</body>
+</html>

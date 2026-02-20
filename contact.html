@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | OKorbits</title>
+  <meta name="description" content="Contact OKorbits team for support, feedback, and collaboration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/contact.css">
+</head>
+<body>
+  <div class="bg-orb orb-one"></div><div class="bg-orb orb-two"></div><div class="grid-overlay"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark"><img src="static/logo.svg" alt="OKorbits logo"></span><span class="brand-text">OKORBITS</span></a>
+    <nav class="desktop-nav"><a href="index.html">Home</a><a href="problems.html">Problems</a><a class="active" href="contact.html">Contact</a></nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
+
+  <main>
+    <section class="hero"><p class="eyebrow">Contact</p><h1>Reach out to the OKorbits team.</h1><p class="hero-copy">Product feedback, bug reports, partnership ideas, or account issues - send us a message.</p></section>
+    <section class="panel two-col">
+      <div class="info-block"><h2>Get in touch</h2><p>We usually reply within 24 hours.</p><ul><li>Email: kaleom5757@gmail.com</li><li>Phone: +91 77759 83924</li><li>Hours: Mon-Sat, 9:00 AM - 7:00 PM</li></ul></div>
+      <div class="form-block">
+        <p class="notice success" id="success" hidden>Thanks! Your message has been saved in this browser.</p>
+        <p class="notice error" id="error" hidden></p>
+        <form class="contact-form" id="contact-form">
+          <input type="text" id="name" placeholder="Your name" required>
+          <input type="email" id="email" placeholder="Your email" required>
+          <textarea id="message" rows="5" placeholder="Write your message..." required></textarea>
+          <button class="btn btn-solid" type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><p>2026 OKorbits. Built for serious DSA learners.</p><div><a href="index.html">Home</a><a href="contact.html">Contact</a><a href="contests.html">Contests</a></div></footer>
+  <script src="static/app.js"></script>
+  <script>
+    OKAuth.renderHeaderActions('#header-actions');
+    document.getElementById('contact-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const errorEl = document.getElementById('error');
+      const successEl = document.getElementById('success');
+      errorEl.hidden = true;
+      successEl.hidden = true;
+      if(!name || !email || !message){ errorEl.hidden = false; errorEl.textContent = 'Please fill name, email, and message.'; return; }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ errorEl.hidden = false; errorEl.textContent = 'Please enter a valid email address.'; return; }
+      const store = JSON.parse(localStorage.getItem('ok_contact_messages') || '[]');
+      store.push({ name:name, email:email, message:message, created_at:new Date().toISOString() });
+      localStorage.setItem('ok_contact_messages', JSON.stringify(store));
+      successEl.hidden = false;
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

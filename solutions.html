@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solutions | OKorbits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/solutions.css">
+</head>
+<body>
+  <main class="solutions-wrap">
+    <header class="top">
+      <div>
+        <a class="back-link" href="problems.html">Back to Problems</a>
+        <h1 id="problem-title"></h1>
+      </div>
+      <div class="actions" id="actions"></div>
+    </header>
+
+    <section class="panel">
+      <h2>Question Description</h2>
+      <p class="description" id="problem-description"></p>
+      <div class="examples"><h3>Examples</h3><ul id="example-list"></ul></div>
+    </section>
+
+    <section class="panel">
+      <h2>How To Write A Proper Solution</h2>
+      <ul class="guide-list">
+        <li>Approach pehle likho: brute force + optimized idea (2-4 lines).</li>
+        <li>Time and Space Complexity zaroor mention karo.</li>
+        <li>Code clean rakho: meaningful variable names, edge cases handle karo.</li>
+        <li>Code ke niche 1 short dry run example do.</li>
+      </ul>
+<pre><code># Recommended format
+# 1) Approach
+# 2) Complexity
+# 3) Code
+
+def solve(...):
+    pass</code></pre>
+    </section>
+
+    <section class="panel" id="add-solution-panel">
+      <h2>Add Solution</h2>
+      <p class="error" id="error" hidden></p>
+      <p class="success" id="success" hidden>Solution posted.</p>
+      <form class="solution-form" id="solution-form">
+        <label for="language">Language</label>
+        <input id="language" name="language" type="text" placeholder="Python / C++ / Java" required>
+        <label for="explanation">Explanation</label>
+        <textarea id="explanation" name="explanation" rows="3" required></textarea>
+        <label for="code">Code</label>
+        <textarea id="code" name="code" rows="10" class="code" required></textarea>
+        <button class="btn solid" type="submit">Post Solution</button>
+      </form>
+      <div class="readonly" id="readonly-note" hidden>
+        <p>This account has view-only access. Login with poster account (dost/dost123) to post.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="all-solutions">
+      <h2 id="all-count">All Solutions</h2>
+      <div class="list" id="solution-list"></div>
+      <p class="empty" id="empty" hidden>No solutions yet.</p>
+    </section>
+  </main>
+
+  <script src="static/app.js"></script>
+  <script src="static/app-data.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = Number(params.get('problem') || '1');
+    const problem = OKData.PROBLEMS.find(function(p){ return p.id === id; }) || OKData.PROBLEMS[0];
+
+    document.title = 'Solutions | ' + problem.title + ' | OKorbits';
+    document.getElementById('problem-title').textContent = problem.id + '. ' + problem.title;
+    document.getElementById('problem-description').textContent = problem.description;
+    document.getElementById('example-list').innerHTML = (problem.examples || []).slice(0,2).map(function(x){ return '<li>' + x + '</li>'; }).join('');
+
+    const actions = document.getElementById('actions');
+    const user = OKAuth.getCurrentUser();
+    if(user){
+      actions.innerHTML = '<span class="user-pill">' + user.display_name + '</span><a class="btn ghost" href="#" id="logout-btn">Logout</a>';
+      document.getElementById('logout-btn').addEventListener('click', function(e){ e.preventDefault(); OKAuth.logout(); window.location.reload(); });
+    } else {
+      actions.innerHTML = '<a class="btn ghost" href="login.html">Login</a>';
+    }
+
+    const key = 'ok_solutions_' + problem.id;
+    const seeded = OKData.SOLUTIONS[problem.id] || [];
+    let solutions = JSON.parse(localStorage.getItem(key) || 'null');
+    if(!solutions){
+      solutions = seeded;
+      localStorage.setItem(key, JSON.stringify(solutions));
+    }
+
+    function renderList(){
+      const list = document.getElementById('solution-list');
+      const empty = document.getElementById('empty');
+      document.getElementById('all-count').textContent = 'All Solutions (' + solutions.length + ')';
+      if(!solutions.length){ list.innerHTML = ''; empty.hidden = false; return; }
+      empty.hidden = true;
+      list.innerHTML = solutions.slice().reverse().map(function(s){
+        return '<article class="item"><div class="meta"><p><strong>' + s.author + '</strong> • ' + s.language + '</p><span>' + s.created_at + '</span></div><p class="explanation">' + s.explanation + '</p><pre><code>' + (s.code || '').replace(/</g,'&lt;') + '</code></pre></article>';
+      }).join('');
+    }
+
+    const canPost = !!(user && user.can_post_solution);
+    const form = document.getElementById('solution-form');
+    document.getElementById('readonly-note').hidden = canPost;
+    form.hidden = !canPost;
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const language = document.getElementById('language').value.trim();
+      const explanation = document.getElementById('explanation').value.trim();
+      const code = document.getElementById('code').value;
+      const error = document.getElementById('error');
+      const success = document.getElementById('success');
+      error.hidden = true;
+      success.hidden = true;
+      if(!explanation || !code){ error.hidden = false; error.textContent = 'Explanation and code are required.'; return; }
+      solutions.push({ author:user.display_name, language:language || 'Python', explanation:explanation, code:code, created_at:new Date().toLocaleString() });
+      localStorage.setItem(key, JSON.stringify(solutions));
+      form.reset();
+      success.hidden = false;
+      renderList();
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
