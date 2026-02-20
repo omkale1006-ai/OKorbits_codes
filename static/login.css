@@ -1,0 +1,154 @@
+:root {
+    --bg: #090d14;
+    --panel: #111824;
+    --line: #24324a;
+    --text: #ebf1ff;
+    --muted: #9fb0cb;
+    --accent: #4cddc2;
+    --danger: #ff7d7d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Space Grotesk", sans-serif;
+    background: radial-gradient(circle at 20% 10%, #152038 0%, #090d14 38%), var(--bg);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    animation: fadein 500ms ease both;
+}
+
+.login-wrap {
+    width: min(460px, 100%);
+}
+
+.back-link {
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 12px;
+    transition: color 160ms ease, transform 160ms ease;
+}
+
+.back-link:hover {
+    color: var(--text);
+    transform: translateX(-2px);
+}
+
+.card {
+    background: rgba(17, 24, 36, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 22px;
+    animation: rise 620ms ease both;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-family: "Sora", sans-serif;
+}
+
+.hint {
+    margin: 0 0 8px;
+    color: var(--muted);
+}
+
+.creds {
+    margin-bottom: 14px;
+}
+
+.error {
+    margin: 0 0 10px;
+    color: var(--danger);
+}
+
+form {
+    display: grid;
+    gap: 8px;
+}
+
+label {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(8, 13, 20, 0.8);
+    color: var(--text);
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+button {
+    margin-top: 8px;
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #2ba0e2);
+    color: #082127;
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+@media (max-width: 560px) {
+    body {
+        padding: 14px;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    button {
+        min-height: 44px;
+    }
+}
